@@ -37,5 +37,5 @@ AppDataSource.initialize().then(async () => {
   
   return app.listen(process.env.PORT || 3333);
 }).catch(() => {
-  console.log("Could not connect to the database");
+  console.log("database not connected.");
 });

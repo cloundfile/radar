@@ -79,11 +79,12 @@ export async function cronusVagas() {
           requisitos: vaga.requisitos,
         });
 
-        await VagaRep.save(novaVaga);
-      } catch (err) {}
+        await VagaRep.save(novaVaga);        
+      } catch (err) {
+        console.error('Wall-e save failed.');
+      }
     }
 
-    //Limpa vagas preenchidas
     const vagasNoBanco = await VagaRep.find({ where: { cidadeId: 1 } });
     const idsDoScrap = new Set(vagas.map(v => `${v.cargo}::${v.quantidade}`));
     const vagasParaRemover = vagasNoBanco.filter(v =>
@@ -93,7 +94,7 @@ export async function cronusVagas() {
       await VagaRep.remove(vaga);
     }
   } catch (error) {
-    console.error('Wall-e falhou ao sincronizar vagas: ', error);
+    console.error('Wall-e sync failed.');
   } finally {
     if (browser) await browser.close();
   }
