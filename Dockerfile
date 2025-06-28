@@ -1,7 +1,5 @@
-# Use uma imagem oficial do Node.js
 FROM node:22-slim
 
-# Instala dependências do sistema necessárias para o Chromium funcionar com o Puppeteer
 RUN apt-get update && apt-get install -y \
   libnss3 \
   libatk-bridge2.0-0 \
@@ -28,7 +26,7 @@ RUN apt-get update && apt-get install -y \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
-# Define o diretório de trabalho
+
 WORKDIR /app
 
 # Copia os arquivos de dependência
