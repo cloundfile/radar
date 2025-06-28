@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>I AM WALL-E</title>
+  <style>
+    html, body {
+      margin: 0; 
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+    .container {
+      position: relative;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+    img.fullscreen-img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover; 
+      z-index: -1;
+    }
+    h1 {
+      position: relative;
+      margin: 0;
+      padding: 20px;
+      font-size: 3rem;
+      text-shadow: 0 0 10px rgba(0,0,0,0.7);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img class="fullscreen-img" src="/wall-e.jpg" alt="Wall-E Image" />
+    <h1>Wall-E</h1>
+  </div>
+</body>
+</html>
