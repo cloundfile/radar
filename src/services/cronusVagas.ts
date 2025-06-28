@@ -21,7 +21,10 @@ async function retry<T>(fn: () => Promise<T>, retries = 3, delayMs = 5000): Prom
 export async function cronusVagas() {
   let browser;
   try {
-    browser = await puppeteer.launch({ headless: true });
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
     const page = await browser.newPage();
 
     await retry(async () => {
