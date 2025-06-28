@@ -1,24 +1,44 @@
-# Use uma imagem oficial do Node.js
-FROM node:22
+FROM node:22-slim
 
-# Define o diretório de trabalho
+# Instala dependências para o Chrome headless
+RUN apt-get update && apt-get install -y \
+    wget \
+    ca-certificates \
+    fonts-liberation \
+    libappindicator3-1 \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    libdrm2 \
+    libgbm1 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    libxss1 \
+    xdg-utils \
+    --no-install-recommends \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Cria diretório da aplicação
 WORKDIR /app
 
-# Copia os arquivos de dependência
+# Copia dependências e instala
 COPY package*.json ./
-
-# Instala as dependências
 RUN npm install
 
-# Copia o restante do projeto
-COPY public ./public
+# Copia código
 COPY . .
 
-# Compila os arquivos TypeScript para JavaScript na pasta dist
+# Compila TypeScript
 RUN npm run build
 
-# Expõe a porta que a aplicação irá escutar
+# Expõe a porta usada
 EXPOSE 3333
 
-# Define o comando para iniciar a aplicação (usando dist)
+# Executa app
 CMD ["node", "dist/index.js"]
