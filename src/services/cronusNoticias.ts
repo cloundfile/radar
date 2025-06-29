@@ -97,11 +97,11 @@ export async function cronusNoticias() {
 
         await NoticiaRep.save(novaNoticia);
       } catch (err) {
-        console.error(`Samy, ops!: ${noticia.title}`);
+        console.error(`Radar save failed: ${noticia.title}`);
       }
     }
   } catch (err) {
-    console.error('Samy não conseguiu sincronizar: ', err);
+    console.error('Radar sync failed.');
   } finally {
     if (browser) await browser.close();
   }

@@ -81,7 +81,7 @@ export async function cronusVagas() {
 
         await VagaRep.save(novaVaga);        
       } catch (err) {
-        console.error('Wall-e save failed.');
+        console.error('Radar save failed.');
       }
     }
 
@@ -94,7 +94,7 @@ export async function cronusVagas() {
       await VagaRep.remove(vaga);
     }
   } catch (error) {
-    console.error('Wall-e sync failed.');
+    console.error('Radar sync failed.');
   } finally {
     if (browser) await browser.close();
   }
