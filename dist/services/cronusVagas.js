@@ -25,7 +25,10 @@ async function retry(fn, retries = 3, delayMs = 5000) {
 async function cronusVagas() {
     let browser;
     try {
-        browser = await puppeteer_1.default.launch({ headless: true });
+        browser = await puppeteer_1.default.launch({
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        });
         const page = await browser.newPage();
         await retry(async () => {
             await page.goto(VAGAS_URL, { waitUntil: 'networkidle2' });
@@ -71,9 +74,10 @@ async function cronusVagas() {
                 });
                 await VagasRep_1.VagaRep.save(novaVaga);
             }
-            catch (err) { }
+            catch (err) {
+                console.error('Wall-e save failed.');
+            }
         }
-        //Limpa vagas preenchidas
         const vagasNoBanco = await VagasRep_1.VagaRep.find({ where: { cidadeId: 1 } });
         const idsDoScrap = new Set(vagas.map(v => `${v.cargo}::${v.quantidade}`));
         const vagasParaRemover = vagasNoBanco.filter(v => !idsDoScrap.has(`${v.cargo}::${v.quantidade}`));
@@ -82,7 +86,7 @@ async function cronusVagas() {
         }
     }
     catch (error) {
-        console.error('Wall-e falhou ao sincronizar vagas: ', error);
+        console.error('Wall-e sync failed.');
     }
     finally {
         if (browser)

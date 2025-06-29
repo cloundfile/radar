@@ -34,8 +34,11 @@ AppDataSource.initialize().then(async () => {
     await cronusNoticias();
     await cronusVagas();
   });
-  
-  return app.listen(process.env.PORT || 3333);
+
+  const port = process.env.PORT || 3333;
+  return app.listen(port, () => {
+    console.log(`Server on in port: ${port}`);
+  });
 }).catch(() => {
   console.log("database not connected.");
 });

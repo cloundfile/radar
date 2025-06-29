@@ -35,7 +35,10 @@ data_source_1.AppDataSource.initialize().then(async () => {
         await (0, cronusNoticias_1.cronusNoticias)();
         await (0, cronusVagas_1.cronusVagas)();
     });
-    return app.listen(process.env.PORT || 3333);
+    const port = process.env.PORT || 3333;
+    return app.listen(port, () => {
+        console.log(`Server on in port: ${port}`);
+    });
 }).catch(() => {
-    console.log("Could not connect to the database");
+    console.log("database not connected.");
 });

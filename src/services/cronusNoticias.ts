@@ -64,7 +64,6 @@ export async function cronusNoticias() {
         const exists = await NoticiaRep.findOneBy({ title: noticia.title });
         if (exists) continue;
 
-        // Abre nova aba para cada notícia com retry
         const detailPage = await browser.newPage();
 
         await retry(async () => {
@@ -80,7 +79,7 @@ export async function cronusNoticias() {
           }
 
           const descEl = document.querySelector('.post-content');
-          const description = descEl ? descEl.textContent?.trim() || '' : '';
+          const description = descEl ? descEl.textContent?.replace(/\s+/g, ' ').trim() : '';          
 
           return { thumbnail: rawThumbnail, description };
         }, BASE_URL);
@@ -98,11 +97,11 @@ export async function cronusNoticias() {
 
         await NoticiaRep.save(novaNoticia);
       } catch (err) {
-        console.error(`Wall-e, ops!: ${noticia.title}`);
+        console.error(`Samy, ops!: ${noticia.title}`);
       }
     }
   } catch (err) {
-    console.error('Wall-e falhou ao sincronizar: ', err);
+    console.error('Samy não conseguiu sincronizar: ', err);
   } finally {
     if (browser) await browser.close();
   }

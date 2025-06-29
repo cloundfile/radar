@@ -24,7 +24,10 @@ async function retry(fn, retries = 3, delayMs = 5000) {
 async function cronusNoticias() {
     let browser;
     try {
-        browser = await puppeteer_1.default.launch({ headless: true });
+        browser = await puppeteer_1.default.launch({
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        });
         const page = await browser.newPage();
         // Carrega página principal com retry
         await retry(async () => {
@@ -55,7 +58,6 @@ async function cronusNoticias() {
                 const exists = await NoticiasRep_1.NoticiaRep.findOneBy({ title: noticia.title });
                 if (exists)
                     continue;
-                // Abre nova aba para cada notícia com retry
                 const detailPage = await browser.newPage();
                 await retry(async () => {
                     await detailPage.goto(noticia.weblink, { waitUntil: 'networkidle2' });
@@ -68,7 +70,7 @@ async function cronusNoticias() {
                         rawThumbnail = BASE_URL + rawThumbnail;
                     }
                     const descEl = document.querySelector('.post-content');
-                    const description = descEl ? descEl.textContent?.trim() || '' : '';
+                    const description = descEl ? descEl.textContent?.replace(/\s+/g, ' ').trim() : '';
                     return { thumbnail: rawThumbnail, description };
                 }, BASE_URL);
                 await detailPage.close();
@@ -83,12 +85,12 @@ async function cronusNoticias() {
                 await NoticiasRep_1.NoticiaRep.save(novaNoticia);
             }
             catch (err) {
-                console.error(`Wall-e, ops!: ${noticia.title}`);
+                console.error(`Samy, ops!: ${noticia.title}`);
             }
         }
     }
     catch (err) {
-        console.error('Wall-e falhou ao sincronizar: ', err);
+        console.error('Samy não conseguiu sincronizar: ', err);
     }
     finally {
         if (browser)
