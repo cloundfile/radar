@@ -1,3 +1,4 @@
+import { AppDataSource } from '../data-source';
 import { NoticiaRep } from '../repository/NoticiaRep';
 import puppeteer from 'puppeteer';
 
@@ -64,6 +65,9 @@ export async function cronusNoticias() {
         const exists = await NoticiaRep.findOneBy({ title: noticia.title });
         if (exists) continue;
 
+        const seqResult = await AppDataSource.query(`SELECT SEQ_NOTICIA.NEXTVAL AS SEQ FROM DUAL`);
+        const nextSeq = seqResult[0].SEQ;
+
         const detailPage = await browser.newPage();
 
         await retry(async () => {
@@ -84,9 +88,10 @@ export async function cronusNoticias() {
           return { thumbnail: rawThumbnail, description };
         }, BASE_URL);
 
-        await detailPage.close();
+        await detailPage.close();        
 
         const novaNoticia = NoticiaRep.create({
+          seq: nextSeq,
           cidadeId: 1,
           servicoId: 2,
           title: noticia.title,
@@ -101,8 +106,8 @@ export async function cronusNoticias() {
         console.error(`Radar save failed: ${noticia.title}`);
       }
     }
-  } catch (err) {
-    console.error('Radar sync failed.');
+  } catch (error) {
+    console.error(`Radar sync failed: ${error}`);
   } finally {
     if (browser) await browser.close();
   }

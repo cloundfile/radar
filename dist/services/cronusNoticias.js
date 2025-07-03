@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cronusNoticias = cronusNoticias;
+const data_source_1 = require("../data-source");
 const NoticiaRep_1 = require("../repository/NoticiaRep");
 const puppeteer_1 = __importDefault(require("puppeteer"));
 const BASE_URL = 'https://pmp.pr.gov.br/website/views/';
@@ -58,6 +59,8 @@ async function cronusNoticias() {
                 const exists = await NoticiaRep_1.NoticiaRep.findOneBy({ title: noticia.title });
                 if (exists)
                     continue;
+                const seqResult = await data_source_1.AppDataSource.query(`SELECT SEQ_NOTICIA.NEXTVAL AS SEQ FROM DUAL`);
+                const nextSeq = seqResult[0].SEQ;
                 const detailPage = await browser.newPage();
                 await retry(async () => {
                     await detailPage.goto(noticia.weblink, { waitUntil: 'networkidle2' });
@@ -75,7 +78,9 @@ async function cronusNoticias() {
                 }, BASE_URL);
                 await detailPage.close();
                 const novaNoticia = NoticiaRep_1.NoticiaRep.create({
+                    seq: nextSeq,
                     cidadeId: 1,
+                    servicoId: 2,
                     title: noticia.title,
                     thumbnail,
                     description,
@@ -89,8 +94,8 @@ async function cronusNoticias() {
             }
         }
     }
-    catch (err) {
-        console.error('Radar sync failed.');
+    catch (error) {
+        console.error(`Radar sync failed: ${error}`);
     }
     finally {
         if (browser)

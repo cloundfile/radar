@@ -53,7 +53,7 @@ async function cronusEmprego() {
         });
         for (const vaga of vagas) {
             try {
-                const seqResult = await data_source_1.AppDataSource.manager.query(`SELECT SEQ_VAGAS.NEXTVAL AS SEQ FROM DUAL`);
+                const seqResult = await data_source_1.AppDataSource.manager.query(`SELECT SEQ_EMPREGO.NEXTVAL AS SEQ FROM DUAL`);
                 const nextSeq = seqResult?.[0]?.SEQ;
                 if (!nextSeq) {
                     continue;
@@ -68,15 +68,15 @@ async function cronusEmprego() {
                 const novaVaga = EmpregoRep_1.EmpregoRep.create({
                     seq: Number(nextSeq),
                     cidadeId: 1,
-                    servicoId: 2,
+                    servicoId: 1,
                     cargo: vaga.cargo,
                     quantidade: vaga.quantidade,
                     requisitos: vaga.requisitos,
                 });
                 await EmpregoRep_1.EmpregoRep.save(novaVaga);
             }
-            catch (err) {
-                console.error('Radar save failed.');
+            catch (error) {
+                console.error(`Radar save failed: ${error}`);
             }
         }
         const vagasNoBanco = await EmpregoRep_1.EmpregoRep.find({ where: { cidadeId: 1, servicoId: 2 } });
