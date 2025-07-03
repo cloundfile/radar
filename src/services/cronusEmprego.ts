@@ -86,13 +86,13 @@ export async function cronusEmprego() {
       }
     }
 
-    const vagasNoBanco = await EmpregoRep.find({ where: { cidadeId: 1, servicoId: 2 } });
-    const idsDoScrap = new Set(vagas.map(v => `${v.cargo}::${v.quantidade}`));
-    const vagasParaRemover = vagasNoBanco.filter(v =>
-      !idsDoScrap.has(`${v.cargo}::${v.quantidade}`)
+    const empregoBanco = await EmpregoRep.find({ where: { cidadeId: 1, servicoId: 2 } });
+    const empregoScrap = new Set(vagas.map(v => `${v.cargo}::${v.quantidade}`));
+    const empregoRemover = empregoBanco.filter(v =>
+      !empregoScrap.has(`${v.cargo}::${v.quantidade}`)
     );
-    for (const vaga of vagasParaRemover) {
-      await EmpregoRep.remove(vaga);
+    for (const emprego of empregoRemover) {
+      await EmpregoRep.remove(emprego);
     }
   } catch (error) {
     console.error('Radar sync failed.');

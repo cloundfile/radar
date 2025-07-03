@@ -51,6 +51,10 @@ __decorate([
     __metadata("design:type", Cidade_1.Cidade)
 ], Emprego.prototype, "cidade", void 0);
 __decorate([
+    (0, typeorm_1.UpdateDateColumn)({ name: 'FECHADA', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }),
+    __metadata("design:type", Date)
+], Emprego.prototype, "fechada", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)({ name: 'PUBLISH', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }),
     __metadata("design:type", Date)
 ], Emprego.prototype, "publish", void 0);

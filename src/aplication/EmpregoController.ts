@@ -39,7 +39,7 @@ export class EmpregoController {
     }
 
     async update(req: Request, res: Response) {
-        const { seq, cargo, quantidade, requisitos, servicoId, cidadeId } = req.body;
+        const { seq, cargo, quantidade, requisitos, fechada, servicoId, cidadeId } = req.body;
 
         if (!seq || !cargo || !quantidade || !requisitos || !servicoId || !cidadeId) {
             return res.status(400).json({ message: "Fields with * required." });
@@ -55,6 +55,7 @@ export class EmpregoController {
             if(cargo)      emprego.cargo = cargo;
             if(quantidade) emprego.quantidade  = quantidade;
             if(requisitos) emprego.requisitos  = requisitos;
+            if(fechada)    emprego.fechada     = fechada;
             if(cidadeId)   emprego.cidadeId    = cidadeId;
             if(servicoId)  emprego.servicoId   = servicoId;
 

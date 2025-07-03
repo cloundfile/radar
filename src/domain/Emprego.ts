@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Cidade } from './Cidade';
 import { Servico } from './Servico';
 
@@ -29,6 +29,9 @@ export class Emprego {
     @ManyToOne(() => Cidade)
     @JoinColumn({ name: 'CIDADE', referencedColumnName: 'seq' })
     cidade: Cidade;
+
+    @UpdateDateColumn({ name: 'FECHADA', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    fechada: Date;
     
     @CreateDateColumn({ name: 'PUBLISH', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     publish: Date;
