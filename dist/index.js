@@ -9,7 +9,7 @@ const routes_1 = __importDefault(require("./routes"));
 const node_cron_1 = __importDefault(require("node-cron"));
 const node_path_1 = __importDefault(require("node:path"));
 const cronusNoticias_1 = require("./services/cronusNoticias");
-const cronusVagas_1 = require("./services/cronusVagas");
+const cronusEmprego_1 = require("./services/cronusEmprego");
 var cors = require('cors');
 data_source_1.AppDataSource.initialize().then(async () => {
     const app = (0, express_1.default)();
@@ -30,14 +30,14 @@ data_source_1.AppDataSource.initialize().then(async () => {
     app.use(cors());
     app.use(routes_1.default);
     await (0, cronusNoticias_1.cronusNoticias)();
-    await (0, cronusVagas_1.cronusVagas)();
+    await (0, cronusEmprego_1.cronusEmprego)();
     node_cron_1.default.schedule('0 */4 * * *', async () => {
         await (0, cronusNoticias_1.cronusNoticias)();
-        await (0, cronusVagas_1.cronusVagas)();
+        await (0, cronusEmprego_1.cronusEmprego)();
     });
     const port = process.env.PORT || 3333;
-    return app.listen(port, () => {
-        console.log(`Server on in port: ${port}`);
+    app.listen(port, () => {
+        console.log(`Server running:\nhttp://localhost:${port}`);
     });
 }).catch(() => {
     console.log("database not connected.");

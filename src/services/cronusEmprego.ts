@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer';
 import { AppDataSource } from '../data-source';
-import { VagaRep } from '../repository/VagasRep';
+import { EmpregoRep } from '../repository/EmpregoRep';
 
 const VAGAS_URL = 'https://pmp.pr.gov.br/website/views/vagasEmprego.php';
 
@@ -18,7 +18,7 @@ async function retry<T>(fn: () => Promise<T>, retries = 3, delayMs = 5000): Prom
   throw lastError;
 }
 
-export async function cronusVagas() {
+export async function cronusEmprego() {
   let browser;
   try {
     browser = await puppeteer.launch({
@@ -62,7 +62,7 @@ export async function cronusVagas() {
           continue;
         }
 
-        const vagaExistente = await VagaRep.findOneBy({
+        const vagaExistente = await EmpregoRep.findOneBy({
           cargo: vaga.cargo,
           quantidade: vaga.quantidade
         });
@@ -71,27 +71,28 @@ export async function cronusVagas() {
           continue;
         }
 
-        const novaVaga = VagaRep.create({
+        const novaVaga = EmpregoRep.create({
           seq: Number(nextSeq),
           cidadeId: 1,
+          servicoId: 2,
           cargo: vaga.cargo,
           quantidade: vaga.quantidade,
           requisitos: vaga.requisitos,
         });
 
-        await VagaRep.save(novaVaga);        
+        await EmpregoRep.save(novaVaga);        
       } catch (err) {
         console.error('Radar save failed.');
       }
     }
 
-    const vagasNoBanco = await VagaRep.find({ where: { cidadeId: 1 } });
+    const vagasNoBanco = await EmpregoRep.find({ where: { cidadeId: 1, servicoId: 2 } });
     const idsDoScrap = new Set(vagas.map(v => `${v.cargo}::${v.quantidade}`));
     const vagasParaRemover = vagasNoBanco.filter(v =>
       !idsDoScrap.has(`${v.cargo}::${v.quantidade}`)
     );
     for (const vaga of vagasParaRemover) {
-      await VagaRep.remove(vaga);
+      await EmpregoRep.remove(vaga);
     }
   } catch (error) {
     console.error('Radar sync failed.');

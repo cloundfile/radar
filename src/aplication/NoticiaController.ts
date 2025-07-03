@@ -1,4 +1,4 @@
-import { NoticiaRep } from '../repository/NoticiasRep';
+import { NoticiaRep } from '../repository/NoticiaRep';
 import { AppDataSource } from '../data-source';
 import { Request, Response } from 'express';
 

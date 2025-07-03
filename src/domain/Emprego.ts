@@ -1,8 +1,9 @@
 import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, CreateDateColumn } from 'typeorm';
 import { Cidade } from './Cidade';
+import { Servico } from './Servico';
 
-@Entity({ name: 'VAGAS' })
-export class Vagas {
+@Entity({ name: 'EMPREGO' })
+export class Emprego {
     @PrimaryColumn({ name: 'SEQ', type: 'number' })
     seq: number;    
 
@@ -13,15 +14,22 @@ export class Vagas {
     quantidade: number;     
 
     @Column({ name: 'REQUISITOS', type: 'clob' })
-    requisitos: string;
+    requisitos: string;  
+    
+    @Column({ name: 'SERVICO', type: 'number' })
+    servicoId: number;     
 
     @Column({ name: 'CIDADE', type: 'number' })
     cidadeId: number;
 
-    @CreateDateColumn({ name: 'PUBLISH', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    publish: Date;
+    @ManyToOne(() => Cidade)
+    @JoinColumn({ name: 'SERVICO', referencedColumnName: 'seq' })
+    servico: Servico;
 
     @ManyToOne(() => Cidade)
     @JoinColumn({ name: 'CIDADE', referencedColumnName: 'seq' })
     cidade: Cidade;
+    
+    @CreateDateColumn({ name: 'PUBLISH', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    publish: Date;
 }

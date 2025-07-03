@@ -5,7 +5,7 @@ import routes from './routes';
 import cron from 'node-cron';
 import path from 'node:path';
 import { cronusNoticias } from './services/cronusNoticias';
-import { cronusVagas } from './services/cronusVagas';
+import { cronusEmprego } from './services/cronusEmprego';
 var cors = require('cors');
 
 AppDataSource.initialize().then(async () => {
@@ -29,15 +29,15 @@ AppDataSource.initialize().then(async () => {
   app.use(routes); 
 
   await cronusNoticias();
-  await cronusVagas();
+  await cronusEmprego();
   cron.schedule('0 */4 * * *', async () => {
     await cronusNoticias();
-    await cronusVagas();
+    await cronusEmprego();
   });
 
   const port = process.env.PORT || 3333;
-  return app.listen(port, () => {
-    console.log(`Server on in port: ${port}`);
+  app.listen(port, () => {
+    console.log(`Server running:\nhttp://localhost:${port}`);
   });
 }).catch(() => {
   console.log("database not connected.");

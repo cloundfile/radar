@@ -1,4 +1,4 @@
-import { NoticiaRep } from '../repository/NoticiasRep';
+import { NoticiaRep } from '../repository/NoticiaRep';
 import puppeteer from 'puppeteer';
 
 const BASE_URL = 'https://pmp.pr.gov.br/website/views/';
@@ -88,6 +88,7 @@ export async function cronusNoticias() {
 
         const novaNoticia = NoticiaRep.create({
           cidadeId: 1,
+          servicoId: 2,
           title: noticia.title,
           thumbnail,
           description,

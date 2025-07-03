@@ -1,33 +1,34 @@
-import { VagaRep } from '../repository/VagasRep';
+import { EmpregoRep } from '../repository/EmpregoRep';
 import { AppDataSource } from '../data-source';
 import { Request, Response } from 'express';
 
-export class VagasController {
+export class EmpregoController {
     async create(req: Request, res: Response) {
-        const { cargo, quantidade, requisitos, cidadeId } = req.body;
+        const { cargo, quantidade, requisitos, servicoId, cidadeId } = req.body;
 
-        if (!cargo || !quantidade || !requisitos || !cidadeId) {
+        if (!cargo || !quantidade || !requisitos || !servicoId || !cidadeId) {
             return res.status(400).json({ message: "Fields with * required." });
         }
 
         try {
-            const unique = await VagaRep.findOneBy({ cargo, cidadeId });
+            const unique = await EmpregoRep.findOneBy({ cargo, cidadeId });
             if (unique) {
                 return res.status(400).json({ message: 'Job already registered for city.' });
             }
 
-            const seqResult = await AppDataSource.query(`SELECT SEQ_VAGA.NEXTVAL AS SEQ FROM DUAL`);
+            const seqResult = await AppDataSource.query(`SELECT SEQ_EMPREGO.NEXTVAL AS SEQ FROM DUAL`);
             const nextSeq = seqResult[0].SEQ;
 
-            const vaga = VagaRep.create({
+            const emprego = cidadeId.create({
                 seq: nextSeq,
                 cargo,
                 quantidade,
                 requisitos,
-                cidadeId
+                cidadeId,
+                servicoId
             });
 
-            await VagaRep.save(vaga);
+            await EmpregoRep.save(emprego);
             return res.status(201).json('Registered successfully!');
         } catch (error) {
             console.error("Creating job error:", error);
@@ -38,25 +39,26 @@ export class VagasController {
     }
 
     async update(req: Request, res: Response) {
-        const { seq, cargo, quantidade, requisitos, cidadeId } = req.body;
+        const { seq, cargo, quantidade, requisitos, servicoId, cidadeId } = req.body;
 
-        if (!seq || !cargo || !quantidade || !requisitos || !cidadeId) {
+        if (!seq || !cargo || !quantidade || !requisitos || !servicoId || !cidadeId) {
             return res.status(400).json({ message: "Fields with * required." });
         }
 
         try {
-            const vaga = await VagaRep.findOne({ where: { seq } });
+            const emprego = await cidadeId.findOne({ where: { seq } });
 
-            if (!vaga) {
+            if (!emprego) {
                 return res.status(404).json({ message: "Not found." });
             }
 
-            vaga.cargo = cargo;
-            vaga.quantidade = quantidade;
-            vaga.requisitos = requisitos;
-            vaga.cidadeId = cidadeId;
+            if(cargo)      emprego.cargo = cargo;
+            if(quantidade) emprego.quantidade  = quantidade;
+            if(requisitos) emprego.requisitos  = requisitos;
+            if(cidadeId)   emprego.cidadeId    = cidadeId;
+            if(servicoId)  emprego.servicoId   = servicoId;
 
-            await VagaRep.save(vaga);
+            await EmpregoRep.save(emprego);
             return res.status(200).json('Updated successfully!');
         } catch (error) {
             console.error("Error updating job:", error);
@@ -74,13 +76,13 @@ export class VagasController {
                 return res.status(400).json({ message: "Invalid or missing 'seq' parameter." });
             }
 
-            const vaga = await VagaRep.findOne({ where: { seq } });
+            const vaga = await EmpregoRep.findOne({ where: { seq } });
 
             if (!vaga) {
                 return res.status(404).json({ message: "Not found." });
             }
 
-            await VagaRep.delete({ seq });
+            await EmpregoRep.delete({ seq });
             return res.status(200).json({ message: "Successfully deleted." });
         } catch (error) {
             console.error("Error deleting job:", error);
@@ -90,23 +92,24 @@ export class VagasController {
 
     async findall(req: Request, res: Response) {
         try {
-            const cidadeId = Number(req.query.cidade);
+            const cidadeId  = Number(req.query.cidade);
+            const servicoId = Number(req.query.servico);
 
-            if (isNaN(cidadeId)) {
-                return res.status(400).json({ message: "Invalid or missing 'cidade' parameter." });
+            if (isNaN(cidadeId) || isNaN(servicoId)) {
+                return res.status(400).json({ message: "Invalid or missing 'cidade' or 'servico' parameter." });
             }
-
-            const vagas = await VagaRep.find({
-                relations: ['cidade'],
-                where: { cidadeId },
-                order: { cargo: 'ASC' }
+            
+            const emprego = await EmpregoRep.find({
+                relations: ['cidade', 'servico'],
+                where: { cidadeId, servicoId },
+                order: { seq: 'ASC' }
             });
 
-            if (!vagas || vagas.length === 0) {
+            if (!emprego || emprego.length === 0) {
                 return res.status(404).json({ message: "No records found." });
             }
 
-            return res.json(vagas);
+            return res.json(emprego);
         } catch (error) {
             console.error("Error fetching jobs:", error);
             return res.status(500).json({ message: "Error fetching jobs", error });

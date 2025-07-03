@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cronusNoticias = cronusNoticias;
-const NoticiasRep_1 = require("../repository/NoticiasRep");
+const NoticiaRep_1 = require("../repository/NoticiaRep");
 const puppeteer_1 = __importDefault(require("puppeteer"));
 const BASE_URL = 'https://pmp.pr.gov.br/website/views/';
 async function retry(fn, retries = 3, delayMs = 5000) {
@@ -55,7 +55,7 @@ async function cronusNoticias() {
         }, BASE_URL);
         for (const noticia of noticias) {
             try {
-                const exists = await NoticiasRep_1.NoticiaRep.findOneBy({ title: noticia.title });
+                const exists = await NoticiaRep_1.NoticiaRep.findOneBy({ title: noticia.title });
                 if (exists)
                     continue;
                 const detailPage = await browser.newPage();
@@ -74,7 +74,7 @@ async function cronusNoticias() {
                     return { thumbnail: rawThumbnail, description };
                 }, BASE_URL);
                 await detailPage.close();
-                const novaNoticia = NoticiasRep_1.NoticiaRep.create({
+                const novaNoticia = NoticiaRep_1.NoticiaRep.create({
                     cidadeId: 1,
                     title: noticia.title,
                     thumbnail,
@@ -82,15 +82,15 @@ async function cronusNoticias() {
                     weblink: noticia.weblink,
                     publish: new Date(),
                 });
-                await NoticiasRep_1.NoticiaRep.save(novaNoticia);
+                await NoticiaRep_1.NoticiaRep.save(novaNoticia);
             }
             catch (err) {
-                console.error(`Samy, ops!: ${noticia.title}`);
+                console.error(`Radar save failed: ${noticia.title}`);
             }
         }
     }
     catch (err) {
-        console.error('Samy não conseguiu sincronizar: ', err);
+        console.error('Radar sync failed.');
     }
     finally {
         if (browser)
