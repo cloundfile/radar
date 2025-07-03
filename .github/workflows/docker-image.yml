@@ -26,4 +26,4 @@ jobs:
           context: .
           push: true
           tags: |
-            inneobr/walle:latest
+            inneobr/radar:latest
