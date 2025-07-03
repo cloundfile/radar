@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmpregoController = void 0;
 const EmpregoRep_1 = require("../repository/EmpregoRep");
 const data_source_1 = require("../data-source");
+const typeorm_1 = require("typeorm");
 class EmpregoController {
     async create(req, res) {
         const { cargo, quantidade, requisitos, servicoId, cidadeId } = req.body;
@@ -95,7 +96,7 @@ class EmpregoController {
             }
             const emprego = await EmpregoRep_1.EmpregoRep.find({
                 relations: ['cidade', 'servico'],
-                where: { cidadeId, servicoId },
+                where: { cidadeId, servicoId, fechada: (0, typeorm_1.IsNull)() },
                 order: { seq: 'ASC' }
             });
             if (!emprego || emprego.length === 0) {

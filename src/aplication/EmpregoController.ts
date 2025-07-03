@@ -1,6 +1,7 @@
 import { EmpregoRep } from '../repository/EmpregoRep';
 import { AppDataSource } from '../data-source';
 import { Request, Response } from 'express';
+import { IsNull } from 'typeorm';
 
 export class EmpregoController {
     async create(req: Request, res: Response) {
@@ -102,7 +103,7 @@ export class EmpregoController {
             
             const emprego = await EmpregoRep.find({
                 relations: ['cidade', 'servico'],
-                where: { cidadeId, servicoId },
+                where: { cidadeId, servicoId, fechada: IsNull() },
                 order: { seq: 'ASC' }
             });
 
