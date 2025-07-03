@@ -91,11 +91,13 @@ export async function cronusEmprego() {
     const empregoRemover = empregoBanco.filter(v =>
       !empregoScrap.has(`${v.cargo}::${v.quantidade}`)
     );
+
     for (const emprego of empregoRemover) {
-      await EmpregoRep.remove(emprego);
+      emprego.fechada = new Date();
+      await EmpregoRep.update(emprego.seq, { fechada: emprego.fechada });
     }
   } catch (error) {
-    console.error('Radar sync failed.');
+    console.error(`Radar sync failed: ${error}`);
   } finally {
     if (browser) await browser.close();
   }
