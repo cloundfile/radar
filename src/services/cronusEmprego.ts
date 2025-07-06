@@ -11,7 +11,7 @@ async function retry<T>(fn: () => Promise<T>, retries = 3, delayMs = 5000): Prom
       return await fn();
     } catch (err) {
       lastError = err;
-      console.warn(`Tentativa ${i + 1} falhou. Retentando em ${delayMs}ms...`);
+      console.warn(`Tentativa ${i + 1} Emprego falhou. Retentando em ${delayMs}ms...`);
       await new Promise(res => setTimeout(res, delayMs));
     }
   }
@@ -74,7 +74,6 @@ export async function cronusEmprego() {
         const novaVaga = EmpregoRep.create({
           seq: Number(nextSeq),
           cidadeId: 1,
-          servicoId: 1,
           cargo: vaga.cargo,
           quantidade: vaga.quantidade,
           requisitos: vaga.requisitos,
@@ -86,7 +85,7 @@ export async function cronusEmprego() {
       }
     }
 
-    const empregoBanco = await EmpregoRep.find({ where: { cidadeId: 1, servicoId: 2 } });
+    const empregoBanco = await EmpregoRep.find({ where: { cidadeId: 1 } });
     const empregoScrap = new Set(vagas.map(v => `${v.cargo}::${v.quantidade}`));
     const empregoRemover = empregoBanco.filter(v =>
       !empregoScrap.has(`${v.cargo}::${v.quantidade}`)

@@ -34,7 +34,7 @@ export async function cronusNoticias() {
     });
 
     const noticias = await page.evaluate((BASE_URL) => {
-      const results: { title: string; weblink: string }[] = [];
+      const results: { title: string; linking: string }[] = [];
       const elements = document.querySelectorAll('.col');
 
       elements.forEach(el => {
@@ -42,18 +42,18 @@ export async function cronusNoticias() {
         const linkEl = el.querySelector('a');
 
         const title = titleEl ? titleEl.textContent?.trim() : '';
-        let weblink = linkEl ? (linkEl as HTMLAnchorElement).href : '';
+        let linking = linkEl ? (linkEl as HTMLAnchorElement).href : '';
 
-        if (weblink && !weblink.startsWith('http')) {
-          weblink = BASE_URL + weblink;
+        if (linking && !linking.startsWith('http')) {
+          linking = BASE_URL + linking;
         }
 
         if (
           title &&
-          weblink &&
+          linking &&
           !['Daniel Langaro', 'Edson Lagarto'].includes(title)
         ) {
-          results.push({ title, weblink });
+          results.push({ title, linking });
         }
       });
 
@@ -71,7 +71,7 @@ export async function cronusNoticias() {
         const detailPage = await browser.newPage();
 
         await retry(async () => {
-          await detailPage.goto(noticia.weblink, { waitUntil: 'networkidle2' });
+          await detailPage.goto(noticia.linking, { waitUntil: 'networkidle2' });
           await detailPage.waitForSelector('.post-content');
         });
 
@@ -93,11 +93,10 @@ export async function cronusNoticias() {
         const novaNoticia = NoticiaRep.create({
           seq: nextSeq,
           cidadeId: 1,
-          servicoId: 2,
-          title: noticia.title,
           thumbnail,
           description,
-          weblink: noticia.weblink,
+          title: noticia.title,
+          linking: noticia.linking,
           publish: new Date(),
         });
 

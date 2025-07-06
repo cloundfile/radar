@@ -30,7 +30,7 @@ AppDataSource.initialize().then(async () => {
 
   await cronusNoticias();
   await cronusEmprego();
-  cron.schedule('0 */4 * * *', async () => {
+  cron.schedule('0 */2 * * *', async () => {
     await cronusNoticias();
     await cronusEmprego();
   });
