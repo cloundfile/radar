@@ -5,9 +5,9 @@ import { IsNull } from 'typeorm';
 
 export class EmpregoController {
     async create(req: Request, res: Response) {
-        const { cargo, quantidade, requisitos, servicoId, cidadeId } = req.body;
+        const { cargo, quantidade, requisitos, cidadeId } = req.body;
 
-        if (!cargo || !quantidade || !requisitos || !servicoId || !cidadeId) {
+        if (!cargo || !quantidade || !requisitos || !cidadeId) {
             return res.status(400).json({ message: "Fields with * required." });
         }
 
@@ -26,7 +26,6 @@ export class EmpregoController {
                 quantidade,
                 requisitos,
                 cidadeId,
-                servicoId
             });
 
             await EmpregoRep.save(emprego);
@@ -40,9 +39,9 @@ export class EmpregoController {
     }
 
     async update(req: Request, res: Response) {
-        const { seq, cargo, quantidade, requisitos, fechada, servicoId, cidadeId } = req.body;
+        const { seq, cargo, quantidade, requisitos, fechada, cidadeId } = req.body;
 
-        if (!seq || !cargo || !quantidade || !requisitos || !servicoId || !cidadeId) {
+        if (!seq || !cargo || !quantidade || !requisitos || !cidadeId) {
             return res.status(400).json({ message: "Fields with * required." });
         }
 
@@ -58,7 +57,6 @@ export class EmpregoController {
             if(requisitos) emprego.requisitos  = requisitos;
             if(fechada)    emprego.fechada     = fechada;
             if(cidadeId)   emprego.cidadeId    = cidadeId;
-            if(servicoId)  emprego.servicoId   = servicoId;
 
             await EmpregoRep.save(emprego);
             return res.status(200).json('Updated successfully!');
@@ -95,15 +93,14 @@ export class EmpregoController {
     async findall(req: Request, res: Response) {
         try {
             const cidadeId  = Number(req.query.cidade);
-            const servicoId = Number(req.query.servico);
 
-            if (isNaN(cidadeId) || isNaN(servicoId)) {
+            if (isNaN(cidadeId)) {
                 return res.status(400).json({ message: "Invalid or missing 'cidade' or 'servico' parameter." });
             }
             
             const emprego = await EmpregoRep.find({
                 relations: ['cidade', 'servico'],
-                where: { cidadeId, servicoId, fechada: IsNull() },
+                where: { cidadeId, fechada: IsNull() },
                 order: { seq: 'ASC' }
             });
 
